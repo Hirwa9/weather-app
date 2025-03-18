@@ -96,14 +96,14 @@ function App() {
 
 	// Function to get the UV description based on the index
 	const getUVDescription = (uvIndex) => {
-		return uvLevels.reduce((acc, curr) => (uvIndex >= curr.level ? curr : acc), uvLevels[0]);
+		return uvLevels.reduce((acc, curr) => (Number(uvIndex) >= curr.level ? curr : acc), uvLevels[0]);
 	};
 
 	const uvIndex = weather?.timelines?.hourly[0]?.values?.uvIndex || 0;
 	const windSpeed = weather?.timelines?.hourly[0]?.values?.windSpeed || 0;
 	const windGust = weather?.timelines?.hourly[0]?.values?.windGust || 0;
 	const windDirection = weather?.timelines?.hourly[0]?.values?.windDirection || 0;
-	const { uvLabel, uvColor } = getUVDescription(uvIndex);
+	const { label: uvLabel, color: uvColor } = getUVDescription(uvIndex);
 
 	return (
 		<>
@@ -122,8 +122,8 @@ function App() {
 						Get real time and forecast weather information for any location
 					</p>
 				</div>
-				{/* Design */}
 
+				{/* Design */}
 				<div className='sm:w-xl md:w-3xl lg:w-6xl xl:w-9xl max-w-full mx-auto flex flex-col md:flex-row gap-4 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
 					{/* First */}
 					<div className="flex flex-col md:w-[50%]">
@@ -283,9 +283,7 @@ function App() {
 								</div>
 								<div className="mb-3 relative text-xl">
 									<div className='mb-2'>{uvIndex}</div>
-									{/* <p className={`mb-1 text-xs ${uvColor}`}>{uvLabel}</p> */}
-									<p className={`mb-1 text-xs ${uvColor}`}>Moderate</p>
-
+									<p className={`ms-2 mb-1 text-xs`}>{uvLabel}</p>
 									<div className="relative mx-2 border-amber-50">
 										<img src="/images/uv_spectrum.png" className='w-full h-1 object-center rounded-full' alt="" />
 										<span
@@ -294,8 +292,8 @@ function App() {
 										></span>
 									</div>
 								</div>
-
 								<div className='text-xs'>
+									{/* TBC */}
 									Use sun protection until 16:00
 								</div>
 							</div>
