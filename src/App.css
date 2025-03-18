@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&display=swap');
+
+/* // <weight>: Use a value from 200 to 1000
+// <uniquifier>: Use a unique and descriptive class name */
+body {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.playwrite-de-grund-light {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.playwrite-de-grund-regular {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.playwrite-de-grund-medium {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.playwrite-de-grund-bold {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.playwrite-de-grund-extrabold {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.playwrite-de-grund-black {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+}
+
+input::placeholder {
+  padding-left: .25rem;
+  transition: .2s;
+}
+
+p,
+.p {
+  margin-bottom: 1rem;
+}
+
+.image-bg {
+  background: linear-gradient(rgba(0, 0, 0, .3), rgba(0, 0, 0, .3)), url('/images/rain-photos.webp');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
