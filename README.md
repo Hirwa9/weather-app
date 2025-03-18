@@ -15,7 +15,7 @@ An intuitive Weather App that provides accurate and up-to-date weather forecasts
 - **Vite**: Lightning-fast development environment and build tool.
 - **Tailwind CSS**: Styling with utility-first CSS classes.
 - **Axios**: For handling API calls efficiently.
-- **OpenWeatherMap API**: To fetch accurate weather data.
+- **tomorrow.io**: To fetch accurate weather data.
 
 ## Installation and Usage
 
