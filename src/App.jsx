@@ -3,7 +3,7 @@ import { useState } from 'react';
 import './App.css';
 import { WEATHER_API_KEY } from './api/api';
 import axios from 'axios';
-import { CalendarBlank, Clock, Cloud, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Thermometer } from '@phosphor-icons/react';
+import { CalendarBlank, Clock, Cloud, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Sun, Thermometer, Wind } from '@phosphor-icons/react';
 import weatherSample from './data/staticData.json';
 import SearchBar from './components/searchBar/SearchBar';
 import toast, { Toaster } from 'react-hot-toast';
@@ -86,36 +86,57 @@ function App() {
 			"It's a hot day! Avoid direct sunlight for long periods and drink plenty of water.";
 	}
 
+	const uvLevels = [
+		{ level: 0, label: "Low", color: "bg-green-400" },
+		{ level: 3, label: "Moderate", color: "bg-yellow-400" },
+		{ level: 6, label: "High", color: "bg-orange-400" },
+		{ level: 8, label: "Very High", color: "bg-red-500" },
+		{ level: 11, label: "Extreme", color: "bg-purple-700" }
+	];
+
+	// Function to get the UV description based on the index
+	const getUVDescription = (uvIndex) => {
+		return uvLevels.reduce((acc, curr) => (uvIndex >= curr.level ? curr : acc), uvLevels[0]);
+	};
+
+	const uvIndex = weather?.timelines?.hourly[0]?.values?.uvIndex || 0;
+	const windSpeed = weather?.timelines?.hourly[0]?.values?.windSpeed || 0;
+	const windGust = weather?.timelines?.hourly[0]?.values?.windGust || 0;
+	const windDirection = weather?.timelines?.hourly[0]?.values?.windDirection || 0;
+	const { uvLabel, uvColor } = getUVDescription(uvIndex);
+
 	return (
 		<>
 			<Toaster />
 			<div className='min-h-screen flex flex-col'
 				style={{
-					backgroundImage: "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/images/rain-photos.webp')",
+					backgroundImage: "linear-gradient(rgba(0, 0, 0, .3), rgba(0, 0, 0, .3)), url('/images/rain-photos.webp')",
 					backgroundSize: 'cover',
 					backgroundRepeat: 'no-repeat',
 				}}
 			>
-				{/* <div className="w-full mb-4 p-5 sm:p-8 bg-linear-to-b from-black/90 to-black/15 text-gray-200 rounded-b-3xl"> */}
-				<div className="w-full mb-4 p-5 sm:p-8 bg-linear-to-b from-black/90 to-black/15 text-gray-200 rounded-b-3xl">
+				<div className="w-full sm:mb-4 p-5 sm:p-8 text-blue-300 sm:rounded-b-3xl">
 					<h1 className='mb-4 text-3xl font-bold text-center'>Weather app</h1>
 					<RainbowCloud size={40} className='mx-auto mb-3' />
-					<p className='mb-7 text-center'>
+					<p className='text-center'>
 						Get real time and forecast weather information for any location
 					</p>
 				</div>
 				{/* Design */}
 
-				<div className='w-6xl max-w-full mx-auto flex flex-col md:flex-row gap-4 p-3 md:p-4 lg:p-6 image-bg rounded-3xl'>
+				<div className='sm:w-xl md:w-3xl lg:w-6xl xl:w-9xl max-w-full mx-auto flex flex-col md:flex-row gap-4 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
 					{/* First */}
-					<div className="flex flex-col w-[50%]">
+					<div className="flex flex-col md:w-[50%]">
 						<SearchBar search={fetchWeather} className="mb-4" />
 
 						<div className="flex-1 p-4 rounded-xl bg-linear-to-b from-black/35 to-white/30">
 							<div className='text-gray-200 mb-15'>
 								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name}</h2>
 								<div className="mx-auto mb-3 mt-15 w-fit text-center relative text-6xl">
-									{temperature} <DotOutline size={40} className='absolute top-0 end-0 translate-x-7' />
+									{temperature}
+									<span className='absolute top-2 end-0 translate-x-7 flex border-amber-100'>
+										<DotOutline size={30} className='absolute -top-2 start-0 -translate-x-5' /> <small style={{ fontSize: '50%' }}>C</small>
+									</span>
 								</div>
 								<div className="text-center text-3xl font-semibold mb-4">{weatherSubtitle}</div>
 								<p className='text-xs text-center'>
@@ -124,13 +145,18 @@ function App() {
 							</div>
 							<div className='flex flex-wrap text-gray-200'>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-1 sm:p-2 ps-0">
-									<div className='h-full p-2 md:p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
-											<Thermometer className='shrink-0' /> Feels like
+											<Thermometer className='shrink-0' /> <span className="text-xs">Feels like</span>
 										</div>
-										<div className="mb-6 w-fit text-center relative text-xl">
+										{/* <div className="mb-6 w-fit text-center relative text-xl">
 											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <DotOutline size={20} className='absolute top-0 end-0 translate-x-4' />
+										</div> */}
+										<div className="mb-6 w-fit text-center relative text-xl">
+											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <span className='absolute top-1 -end-1 translate-x-3 flex border-amber-100'>
+												<DotOutline size={20} className='absolute -top-1 -start-4' /> <small style={{ fontSize: '50%' }}>C</small>
+											</span>
 										</div>
 										<div className='text-xs'>
 											Humidity is making it feel warmer
@@ -138,10 +164,10 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-1 sm:p-2 pe-0">
-									<div className='h-full p-2 md:p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
-											<Drop className='shrink-0' /> Precipitation
+											<Drop className='shrink-0' /> <span className="text-xs">Precipitation</span>
 										</div>
 										<div className="mb-6 w-fit text-center relative text-xl">
 											{weather?.timelines?.minutely[0]?.values?.precipitationProbability} <Quotes size={8} weight="fill" className='absolute top-0 end-0 translate-x-3 translate-y-2' /> <span className="text-sm">in last 24h</span>
@@ -152,10 +178,10 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-1 sm:p-2 ps-0">
-									<div className='h-full p-2 md:p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
-											<Eye className='shrink-0' /> Visibility
+											<Eye className='shrink-0' /> <span className="text-xs">Visibility</span>
 										</div>
 										<div className="mb-6 w-fit text-center relative text-xl">
 											{weather?.timelines?.minutely[0]?.values?.visibility} mi
@@ -163,10 +189,10 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-1 sm:p-2 pe-0">
-									<div className='h-full p-2 md:p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
-											<DropHalf className='shrink-0' /> Humidity
+											<DropHalf className='shrink-0' /> <span className="text-xs">Humidity</span>
 										</div>
 										<div className="mb-6 w-fit text-center relative text-xl">
 											{weather?.timelines?.minutely[0]?.values?.humidity}%
@@ -182,16 +208,16 @@ function App() {
 
 					{/* Second */}
 					{/* <div className="w-[50%] bg-white/10"> */}
-					<div className="w-[50%]">
-						{/* Hourly */}
-						<div className='mb-4 p-2 md:p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
+					<div className="md:w-[50%]">
+						{/* Hourly Forecast */}
+						<div className='mb-4 p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
 							<div className="flex items-center gap-2 mb-4 uppercase opacity-50 overflow-hidden pb-1 border-b-2 border-b-gray-600">
-								<Clock /> Hourly forecast
+								<Clock /> <span className="text-xs">Hourly forecast</span>
 							</div>
 							<div className="max-w-full flex gap-3 overflow-auto">
 								<div className="flex flex-col items-center gap-1 w-fit mb-3 p-2 rounded-xl bg-gray-600">
 									<div className='text-xs'>Now</div>
-									<div className="w-fit text-center flex text-md translate-x-1">
+									<div className="w-fit text-center flex text-lg translate-x-1">
 										<span className='drop-shadow-lg'>{weather?.timelines?.hourly[0]?.values?.temperatureApparent}</span> <DotOutline size={13} className='' />
 									</div>
 									<Cloud size={20} weight='fill' />
@@ -203,7 +229,7 @@ function App() {
 											<div className='text-xs'>
 												{new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
 											</div>
-											<div className="w-fit text-center flex text-md translate-x-1">
+											<div className="w-fit text-center flex text-lg translate-x-1">
 												<span className='drop-shadow-lg'>{item.values?.temperatureApparent}</span> <DotOutline size={13} className='' />
 											</div>
 											<Cloud size={20} weight='fill' />
@@ -212,15 +238,19 @@ function App() {
 								}
 							</div>
 						</div>
-						{/* Daily */}
-						<div className='mb-4 p-2 md:p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
+						{/* Daily Forecast */}
+						<div className='mb-4 p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
 							<div className="flex items-center gap-2 mb-4 uppercase opacity-50 overflow-hidden pb-1 border-b-2 border-b-gray-600">
-								<CalendarBlank /> Weekly forecast
+								{/* <CalendarBlank /> <span className="text-xs">Weekly forecast</span> */}
+								<CalendarBlank /> <span className="text-xs">{weather?.timelines?.daily.length}-Day forecast</span>
 							</div>
 							<div className="max-w-full flex gap-3 overflow-auto">
 								<div className="flex flex-col items-center gap-1 w-fit mb-3 p-2 rounded-xl bg-gray-600">
 									<div className='text-xs'>Today</div>
-									<div className="w-fit text-center flex text-md translate-x-1">
+									<div className='text-xs text-gray-400' style={{ scale: .8 }}>
+										{new Date(weather?.timelines?.daily[0]?.time).getDate()}/{new Date(weather?.timelines?.daily[0]?.time).getMonth()}
+									</div>
+									<div className="w-fit text-center flex text-lg translate-x-1">
 										<span className='drop-shadow-lg'>{weather?.timelines?.daily[0]?.values?.temperatureApparentAvg}</span> <DotOutline size={13} className='' />
 									</div>
 									<Cloud size={20} weight='fill' />
@@ -232,13 +262,99 @@ function App() {
 											<div className='text-xs'>
 												{new Date(item.time).toLocaleString([], { weekday: 'short' })}
 											</div>
-											<div className="w-fit text-center flex text-md translate-x-1">
+											<div className='text-xs text-gray-400' style={{ scale: .8 }}>
+												{new Date(item.time).getDate()}/{new Date(item.time).getMonth()}
+											</div>
+											<div className="w-fit text-center flex text-lg translate-x-1">
 												<span className='drop-shadow-lg'>{item.values?.temperatureApparentAvg}</span> <DotOutline size={13} className='' />
 											</div>
 											<Cloud size={20} weight='fill' />
 										</div>
 									))
 								}
+							</div>
+						</div>
+						{/* UV and Wind */}
+						<div className="sm:flex md:block lg:flex gap-3">
+							{/* UV */}
+							<div className='flex-1 mb-4 p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
+								<div className="flex items-center gap-2 mb-4 uppercase opacity-50 overflow-hidden">
+									<Sun /> <span className="text-xs">UV index</span>
+								</div>
+								<div className="mb-3 relative text-xl">
+									<div className='mb-2'>{uvIndex}</div>
+									{/* <p className={`mb-1 text-xs ${uvColor}`}>{uvLabel}</p> */}
+									<p className={`mb-1 text-xs ${uvColor}`}>Moderate</p>
+
+									<div className="relative mx-2 border-amber-50">
+										<img src="/images/uv_spectrum.png" className='w-full h-1 object-center rounded-full' alt="" />
+										<span
+											className="absolute left-0 top-1/2 w-3 h-3 -translate-x-1/2 -translate-y-1/2 border-[1.5px] border-gray-800 bg-gray-200 rounded-full cursor-pointer"
+											style={{ left: `${(uvIndex / 11) * 100}%` }}
+										></span>
+									</div>
+								</div>
+
+								<div className='text-xs'>
+									Use sun protection until 16:00
+								</div>
+							</div>
+							{/* Wind */}
+							<div className='flex-1 mb-4 p-3 rounded-xl bg-black/30 text-gray-200 backdrop-blur-sm overflow-hidden'>
+								<div className="flex items-center gap-2 mb-4 uppercase opacity-50 overflow-hidden">
+									<Wind /> <span className="text-xs">Wind</span>
+								</div>
+								<div className="flex gap-3 items-start">
+									<div className="mb-3 grow-1">
+										<div className="flex items-center gap-2">
+											<div className='text-xl'>{windSpeed}</div>
+											<div className='grid text-sm'>
+												<span className='opacity-50 uppercase'>MPH</span>
+												<span>Speed</span>
+											</div>
+										</div>
+										<hr className='my-2 border-gray-500' />
+										<div className="flex items-center gap-2">
+											<div className='text-xl'>{windGust}</div>
+											<div className='grid text-sm'>
+												<span className='opacity-50 uppercase'>MPH</span>
+												<span>Gust</span>
+											</div>
+										</div>
+									</div>
+
+									<div className="bg-gray-800 p-2 border-[1.5px] border-white/20 rounded-full">
+										<div className="relative w-20 ms-auto aspect-square border border-gray-600 rounded-full">
+											{/* Poles */}
+											<span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center p-[1px] text-xs leading-none bg-gray-800">
+												N
+											</span>
+											<span className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 flex justify-center items-center p-[1px] text-xs leading-none bg-gray-800">
+												E
+											</span>
+											<span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 flex justify-center items-center p-[1px] text-xs leading-none bg-gray-800">
+												S
+											</span>
+											<span className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 flex justify-center items-center p-[1px] text-xs leading-none bg-gray-800">
+												W
+											</span>
+											{/* Needles */}
+											<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[.70rem] aspect-square border-[1.5px] border-gray-800 bg-gray-200 rounded-full z-1'
+												style={{ transform: `rotate(${windDirection}deg)` }}
+											>
+												{/* Top needle */}
+												<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 transform-[translate] h-[400%] max-h-8 w-2 bg-white/80 -z-1'
+													style={{ clipPath: "polygon(50% 0, 100% 100%, 0 100%, 50% 0)", transform: "translateY(-50%)" }}
+												></span>
+												{/* Bottom needle */}
+												<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[400%] max-h-8 w-2 bg-white/30 -z-1'
+													style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%, 0 0)", transform: "translateY(50%)" }}
+												></span>
+											</span>
+										</div>
+									</div>
+
+								</div>
 							</div>
 						</div>
 					</div>
@@ -260,10 +376,10 @@ function App() {
 					)}
 					{!loading && !error && weather && (
 						<div>
-							<h3>Weather in {weather?.location?.name}</h3>
+							{/* <h3>Weather in {weather?.location?.name}</h3>
 							<code style={{ whiteSpace: 'pre-wrap' }}>
 								{JSON.stringify((weather), null, 2)}
-							</code>
+							</code> */}
 						</div>
 					)}
 				</div>
