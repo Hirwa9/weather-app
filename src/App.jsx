@@ -130,12 +130,12 @@ function App() {
 						<SearchBar search={fetchWeather} className="mb-4" />
 
 						<div className="flex-1 p-4 rounded-xl bg-linear-to-b from-black/35 to-white/30">
-							<div className='text-gray-200 mb-15'>
+							<div className='text-gray-200 mb-14'>
 								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name}</h2>
-								<div className="mx-auto mb-3 mt-15 w-fit text-center relative text-6xl">
+								<div className="mx-auto mb-3 mt-14 w-fit text-center relative text-6xl">
 									{temperature}
-									<span className='absolute top-2 end-0 translate-x-7 flex border-amber-100'>
-										<DotOutline size={30} className='absolute -top-2 start-0 -translate-x-5' /> <small style={{ fontSize: '50%' }}>C</small>
+									<span className='absolute top-2 right-0 translate-x-7 flex border-amber-100'>
+										<DotOutline size={30} className='absolute -top-2 left-0 -translate-x-5' /> <small style={{ fontSize: '50%' }}>C</small>
 									</span>
 								</div>
 								<div className="text-center text-3xl font-semibold mb-4">{weatherSubtitle}</div>
@@ -151,11 +151,11 @@ function App() {
 											<Thermometer className='shrink-0' /> <span className="text-xs">Feels like</span>
 										</div>
 										{/* <div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <DotOutline size={20} className='absolute top-0 end-0 translate-x-4' />
+											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <DotOutline size={20} className='absolute top-0 right-0 translate-x-4' />
 										</div> */}
 										<div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <span className='absolute top-1 -end-1 translate-x-3 flex border-amber-100'>
-												<DotOutline size={20} className='absolute -top-1 -start-4' /> <small style={{ fontSize: '50%' }}>C</small>
+											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <span className='absolute top-1 -right-1 translate-x-3 flex border-amber-100'>
+												<DotOutline size={20} className='absolute -top-1 -left-4' /> <small style={{ fontSize: '50%' }}>C</small>
 											</span>
 										</div>
 										<div className='text-xs'>
@@ -170,7 +170,7 @@ function App() {
 											<Drop className='shrink-0' /> <span className="text-xs">Precipitation</span>
 										</div>
 										<div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.precipitationProbability} <Quotes size={8} weight="fill" className='absolute top-0 end-0 translate-x-3 translate-y-2' /> <span className="text-sm">in last 24h</span>
+											{weather?.timelines?.minutely[0]?.values?.precipitationProbability} <Quotes size={8} weight="fill" className='absolute top-0 right-0 translate-x-3 translate-y-2' /> <span className="text-sm">in last 24h</span>
 										</div>
 										<div className='text-xs'>
 											{Math.round(weather.timelines.daily[1]?.values?.precipitationProbabilityAvg)} expected in next 24h
@@ -198,7 +198,7 @@ function App() {
 											{weather?.timelines?.minutely[0]?.values?.humidity}%
 										</div>
 										<div className='text-xs'>
-											The dew point is <span className="relative me-1">{weather?.timelines?.minutely[0]?.values?.dewPoint} <DotOutline size={10} className='absolute top-0 end-0 translate-x-1' /></span> right now
+											The dew point is <span className="relative me-1">{weather?.timelines?.minutely[0]?.values?.dewPoint} <DotOutline size={10} className='absolute top-0 right-0 translate-x-1' /></span> right now
 										</div>
 									</div>
 								</div>
@@ -303,7 +303,7 @@ function App() {
 									<Wind /> <span className="text-xs">Wind</span>
 								</div>
 								<div className="flex gap-3 items-start">
-									<div className="mb-3 grow-1">
+									<div className="mb-3 flex-1">
 										<div className="flex items-center gap-2">
 											<div className='text-xl'>{windSpeed}</div>
 											<div className='grid text-sm'>
@@ -337,16 +337,16 @@ function App() {
 												W
 											</span>
 											{/* Needles */}
-											<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[.70rem] aspect-square border-[1.5px] border-gray-800 bg-gray-200 rounded-full z-1'
-												style={{ transform: `rotate(${windDirection}deg)` }}
+											<span className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[0.70rem] aspect-square border-[1.5px] border-gray-800 bg-gray-200 rounded-full z-10'
+												style={{ transform: `translateX(-50%) translateY(-50%) rotate(${windDirection}deg)` }}
 											>
 												{/* Top needle */}
-												<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 transform-[translate] h-[400%] max-h-8 w-2 bg-white/80 -z-1'
-													style={{ clipPath: "polygon(50% 0, 100% 100%, 0 100%, 50% 0)", transform: "translateY(-50%)" }}
+												<span className='absolute top-1/2 left-1/2 h-[400%] max-h-8 w-2 bg-white/80 -z-1'
+													style={{ clipPath: "polygon(50% 0, 100% 100%, 0 100%, 50% 0)", transform: "translateX(-50%) translateY(-50%) translateY(-50%)" }}
 												></span>
 												{/* Bottom needle */}
-												<span className='absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[400%] max-h-8 w-2 bg-white/30 -z-1'
-													style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%, 0 0)", transform: "translateY(50%)" }}
+												<span className='absolute top-1/2 left-1/2 h-[400%] max-h-8 w-2 bg-white/30 -z-1'
+													style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%, 0 0)", transform: "translateX(-50%) translateY(-50%) translateY(50%)" }}
 												></span>
 											</span>
 										</div>
