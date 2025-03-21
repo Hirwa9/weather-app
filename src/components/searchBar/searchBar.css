@@ -1,2 +1,15 @@
-/* 
-#search-input::placeholder {} */
+input:autofill,
+input:-webkit-autofill {
+    --tw-bg-opacity: 1;
+    --tw-text-opacity: 1;
+
+    filter: none;
+    /* needed for firefox! */
+
+    -webkit-box-shadow: 0 0 0 100px rgb(31 41 55 / var(--tw-bg-opacity, 1)) inset;
+    -moz-box-shadow: 0 0 0 100px rgb(31 41 55 / var(--tw-bg-opacity, 1)) inset;
+    box-shadow: 0 0 0 100px rgb(31 41 55 / var(--tw-bg-opacity, 1)) inset;
+    color: rgb(255 251 235 / var(--tw-text-opacity, 1)) !important;
+    -webkit-text-fill-color: rgb(255 251 235 / var(--tw-text-opacity, 1)) !important;
+    caret-color: rgb(255 251 235 / var(--tw-text-opacity, 1)) !important;
+}

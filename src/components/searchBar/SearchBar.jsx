@@ -15,10 +15,10 @@ const SearchBar = ({ search = () => { }, className }) => {
 
     return (
         <form action="" onSubmit={handleSubmit} className={className}>
-            <div className='flex items-stretch bg-gray-800 text-amber-50 rounded-full overflow-hidden'>
+            <div className='flex items-stretch bg-gray-800 text-amber-50 rounded-full overflow-hidden focus-within:border focus-within:border-dashed focus-within:border-slate-400 '>
                 <MapPin size={20} className='self-center ms-3' />
                 <input
-                    className='flex-1 px-2 outline-0'
+                    className='flex-1 px-2 outline-0 bg-inherit search-input caret-inherit'
                     style={{ transition: "padding .1s" }}
                     type="text"
                     name="city_name"
