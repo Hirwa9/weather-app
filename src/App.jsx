@@ -124,7 +124,7 @@ function App() {
 				</div>
 
 				{/* Design */}
-				<div className='sm:w-xl md:w-3xl lg:w-6xl xl:w-9xl max-w-full mx-auto flex flex-col md:flex-row gap-4 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
+				<div className='sm:w-xl md:w-3xl lg:w-6xl xl:w-9xl max-w-full mx-auto flex flex-col md:flex-row gap-4 pt-10 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
 					{/* First */}
 					<div className="flex flex-col md:w-[50%]">
 						<SearchBar search={fetchWeather} className="mb-4" />
@@ -159,7 +159,7 @@ function App() {
 											</span>
 										</div>
 										<div className='text-xs'>
-											Humidity is making it feel warmer
+											Humidity is making it feel like
 										</div>
 									</div>
 								</div>
@@ -293,8 +293,11 @@ function App() {
 									</div>
 								</div>
 								<div className='text-xs'>
-									{/* TBC */}
-									Use sun protection until 16:00
+									{uvIndex <= 2 && "Low danger from the sun's UV rays for the average person."}
+									{uvIndex > 2 && uvIndex <= 5 && "Moderate risk of harm from unprotected sun exposure."}
+									{uvIndex > 5 && uvIndex <= 7 && "High risk of harm from unprotected sun exposure. Protection against skin and eye damage is needed."}
+									{uvIndex > 7 && uvIndex <= 10 && "Very high risk of harm from unprotected sun exposure. Take extra precautions because unprotected skin and eyes will be damaged and can burn quickly."}
+									{uvIndex > 10 && "Extreme risk of harm from unprotected sun exposure. Take all precautions because unprotected skin and eyes can burn in minutes."}
 								</div>
 							</div>
 							{/* Wind */}
