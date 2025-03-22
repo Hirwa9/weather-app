@@ -8,9 +8,6 @@ const SearchBar = ({ search = () => { }, className }) => {
     const handleSubmit = (e) => {
         if (e) e.preventDefault();
         search(city);
-        setTimeout(() => {
-            setCity('');
-        }, 500);
     }
 
     return (
