@@ -1,9 +1,9 @@
 // import { useState } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
-import { WEATHER_API_KEY } from './api/api';
+import { GEOCODING_API_KEY, WEATHER_API_KEY } from './api/api';
 import axios from 'axios';
-import { CalendarBlank, Clock, Cloud, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Sun, SunHorizon, Thermometer, Wind } from '@phosphor-icons/react';
+import { CalendarBlank, Clock, Cloud, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Sun, SunHorizon, Thermometer, Warning, Wind } from '@phosphor-icons/react';
 
 import weatherSample from './data/staticData.json';
 import SearchBar from './components/searchBar/SearchBar';
@@ -16,36 +16,127 @@ function App() {
 		return toast(txt, {
 			position: 'top-center',
 			style: {
-				backgroundColor: "var(--color-gray-600)",
-				color: "var(--color-gray-200)",
-				border: "1.5px dashed var(--color-gray-500)",
+				backgroundColor: "rgb(31 41 55 / var(--tw-bg-opacity, 1))",
+				color: "rgb(255 251 235 / var(--tw-text-opacity, 1))",
+				border: "1.5px dashed rgb(72 71 68)",
 			}
 		})
 	}
 
-	// const apiUrl = `https://api.tomorrow.io/v4/weather/forecast?location=42.3478,-71.0466&apikey=${WEATHER_API_KEY}`
+	/**
+	 * Current location
+	 */
 
-	// const [weather, setWeather] = useState(null);
+	const getGeolocationCordinates = () => {
+		return new Promise((resolve, reject) => {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const { latitude, longitude } = position.coords;
+					resolve({ lat: latitude, long: longitude });
+				},
+				(error) => {
+					console.error('Error getting location:', error);
+					reject(error);
+				}
+			);
+		});
+	};
+
+	// Get current location coordinates
+	const [currentLocationCoordinates, setCurrentLocationCoordinates] = useState({});
+	const [currentLocationWeatherUrl, setCurrentLocationWeatherUrl] = useState('');
+
+	useEffect(() => {
+		(async () => {
+			try {
+				const cords = await getGeolocationCordinates();
+				setCurrentLocationCoordinates(cords);
+			} catch (error) {
+				console.error('Error fetching current location:', error);
+				notify(
+					<div className='flex gap-2'>
+						<Warning size={20} /> Couldn't get device location
+					</div>
+				);
+			}
+		})();
+	}, []);
+
+	// Construct current location weather URL
+	useEffect(() => {
+		if (currentLocationCoordinates.lat && currentLocationCoordinates.long) {
+			const cordString = `${currentLocationCoordinates.lat},${currentLocationCoordinates.long}`
+			setCurrentLocationWeatherUrl(`https://api.tomorrow.io/v4/weather/forecast?location=${cordString}&apikey=${WEATHER_API_KEY}`);
+		}
+	}, [currentLocationCoordinates])
+
+	// Helper to get current location data using geolocation coordinates
+	const [geocoddingLocationData, setGeocoddingLocationData] = useState({});
+	const [currentLocationName, setCurrentLocationName] = useState('');
+
+	const fetchCurrentLocatioGeocoddingData = async () => {
+		try {
+			setLoading(true);
+			setError(null);
+			const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${currentLocationCoordinates.lat}+${currentLocationCoordinates.long}&key=${GEOCODING_API_KEY}`);
+			setGeocoddingLocationData(response?.data);
+		} catch (err) {
+			console.error(err);
+			setError('Failed to fetch weather data');
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	// Fetch current location's data if allowed (Granted access to device location)
+	useEffect(() => {
+		if (currentLocationCoordinates.lat && currentLocationCoordinates.long) {
+			fetchCurrentLocatioGeocoddingData();
+		}
+	}, [currentLocationCoordinates]);
+
+	// set current location name
+	useEffect(() => {
+		if (geocoddingLocationData?.results) {
+			setCurrentLocationName(geocoddingLocationData?.results[0]?.formatted);
+		}
+	}, [geocoddingLocationData]);
+
+	/**
+	 * Weather
+	 */
+
 	const [weather, setWeather] = useState(weatherSample);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// console.log(typeof weather);
-	// console.log(weather?.timelines?.hourly.slice(1)[1]);
-
-	const fetchWeather = async (str) => {
-		if (!str || str.trim() === '' || str.trim().length < 2) {
+	const fetchWeather = async (values) => {
+		// If not using current location
+		if (!values || typeof values !== 'object') {
 			return notify('Enter a location to continue');
 		}
 
-		const apiUrl = `https://api.tomorrow.io/v4/weather/forecast?location=${str}&apikey=${WEATHER_API_KEY}`
-		// const apiUrl = `https://api.tomorrow.io/v4/weather/realtime?location=${str}&apikey=${WEATHER_API_KEY}`
+		// Set the URL to fetch
+		let weatherUrl;
+
+		if (values.useHere) {
+			// When using current location
+			if (currentLocationWeatherUrl === '') {
+				return notify('Grant access to use your device location in order to continue');
+			}
+			weatherUrl = currentLocationWeatherUrl;
+		} else {
+			// When using search query string
+			if (values.query.trim() === '') {
+				return notify('Enter a location to continue');
+			}
+			weatherUrl = `https://api.tomorrow.io/v4/weather/forecast?location=${values.query}&apikey=${WEATHER_API_KEY}`
+		}
 
 		try {
 			setLoading(true);
 			setError(null);
-			const response = await axios.get(apiUrl);
-			// console.log(response);
+			const response = await axios.get(weatherUrl);
 			setWeather(response?.data);
 		} catch (err) {
 			console.error(err);
@@ -157,7 +248,7 @@ function App() {
 
 						<div className="flex-1 p-2 md:p-4 rounded-xl bg-gradient-to-b from-black/35 to-white/30">
 							<div className='text-gray-200 mb-14'>
-								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name}</h2>
+								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name || currentLocationName}</h2>
 								<div className="mx-auto mb-3 mt-14 w-fit text-center relative text-6xl">
 									{temperature}
 									<span className='absolute top-2 right-0 translate-x-7 flex border-amber-100'>
