@@ -246,7 +246,7 @@ function App() {
 					<div className="flex flex-col md:w-[50%]">
 						<SearchBar search={fetchWeather} className="mb-4" />
 
-						<div className="flex-1 p-2 md:p-4 rounded-xl bg-gradient-to-b from-black/35 to-white/30">
+						<div className="flex-1 p-2 pt-6 md:p-4 rounded-xl bg-gradient-to-b from-black/35 to-white/30">
 							<div className='text-gray-200 mb-14'>
 								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name || currentLocationName}</h2>
 								<div className="mx-auto mb-3 mt-14 w-fit text-center relative text-6xl">
@@ -262,14 +262,11 @@ function App() {
 							</div>
 							<div className='flex flex-wrap text-gray-200'>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+								<div className="w-[50%] shrink-0 pe-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<Thermometer className='shrink-0' /> <span className="text-xs">Feels like</span>
 										</div>
-										{/* <div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <DotOutline size={20} className='absolute top-0 right-0 translate-x-4' />
-										</div> */}
 										<div className="mb-6 w-fit text-center relative text-xl">
 											{weather?.timelines?.minutely[0]?.values?.temperatureApparent}
 											<span className='absolute top-1 -right-1 translate-x-3 flex border-amber-100'>
@@ -294,7 +291,7 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+								<div className="w-[50%] shrink-0 ps-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<Drop className='shrink-0' /> <span className="text-xs">Precipitation</span>
@@ -308,7 +305,7 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+								<div className="w-[50%] shrink-0 pe-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<Eye className='shrink-0' /> <span className="text-xs">Visibility</span>
@@ -319,7 +316,7 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+								<div className="w-[50%] shrink-0 ps-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<DropHalf className='shrink-0' /> <span className="text-xs">Humidity</span>
@@ -333,7 +330,7 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+								<div className="w-[50%] shrink-0 pe-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<Cloud className='shrink-0' /> <span className="text-xs">Cloud cover</span>
@@ -357,7 +354,7 @@ function App() {
 									</div>
 								</div>
 								{/*  */}
-								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+								<div className="w-[50%] shrink-0 ps-1 py-2 sm:p-2">
 									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
 										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
 											<SunHorizon className='shrink-0' /> <span className="text-xs">Sunset</span>
