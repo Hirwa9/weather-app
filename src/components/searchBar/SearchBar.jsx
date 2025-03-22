@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import './searchBar.css'
-import { MagnifyingGlass, MapPin } from '@phosphor-icons/react';
+import { CaretDown, GpsFix, MagnifyingGlass, MapPin } from '@phosphor-icons/react';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/transitions/zoom.css';
+import { Menu, MenuItem, MenuButton, MenuDivider } from '@szhsin/react-menu';
 
 const SearchBar = ({ search = () => { }, className }) => {
 
     const [city, setCity] = useState('');
+    const [useCurrentLocation, setUseCurrentLocation] = useState(false);
     const handleSubmit = (e) => {
         if (e) e.preventDefault();
-        search(city);
+        search({ query: !useCurrentLocation ? city : null, useHere: useCurrentLocation });
     }
 
     return (
@@ -28,10 +32,20 @@ const SearchBar = ({ search = () => { }, className }) => {
                     type="submit"
                     className='flex items-center justify-center w-[20%] min-w-10 max-w-20 h-8 py-1 cursor-pointer active:scale-95 hover:bg-white/10 active:bg-transparent'
                     style={{ transition: "scale .1s, background .3s" }}
-                    onClick={() => handleSubmit()}
+                    onClick={() => { setUseCurrentLocation(false); }}
                 >
                     <MagnifyingGlass size={20} />
                 </button>
+                <Menu className=" bg-gray-600 text-gray-200" menuButton={
+                    <MenuButton className="border-s border-s-slate-500 px-3 flex-align-center">
+                        <CaretDown className="me-1" />
+                    </MenuButton>
+                } transition>
+                    <MenuItem className="text-sm active:scale-95" onClick={() => { setUseCurrentLocation(true); handleSubmit(); }}>
+                        <GpsFix weight='fill' className="me-2 opacity-50" /> Use my location
+                    </MenuItem>
+                </Menu>
+
             </div>
         </form>
     )
