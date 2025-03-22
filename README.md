@@ -16,6 +16,7 @@ An intuitive Weather App that provides accurate and up-to-date weather forecasts
 - **Tailwind CSS**: Styling with utility-first CSS classes.
 - **Axios**: For handling API calls efficiently.
 - **tomorrow.io**: To fetch accurate weather data.
+- **api.opencagedata.com**: For reverse geocoding live/current location coordinates.
 
 ## Installation and Usage
 
@@ -57,7 +58,8 @@ An intuitive Weather App that provides accurate and up-to-date weather forecasts
 Create a `.env` file in the root directory and include your OpenWeatherMap API key:
 
 ```env
-VITE_WEATHER_API_KEY=your_api_key_here
+VITE_WEATHER_API_KEY=your_api_key
+VITE_GEOCODING_API_KEY=your_api_key
 ```
 
 ## Future Improvements
