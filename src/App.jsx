@@ -3,7 +3,8 @@ import { useState } from 'react';
 import './App.css';
 import { WEATHER_API_KEY } from './api/api';
 import axios from 'axios';
-import { CalendarBlank, Clock, Cloud, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Sun, Thermometer, Wind } from '@phosphor-icons/react';
+import { CalendarBlank, Clock, Cloud, CloudFog, CloudLightning, CloudRain, CloudSnow, CloudSun, DotOutline, Drop, DropHalf, Eye, Quotes, RainbowCloud, Spinner, Sun, SunHorizon, Thermometer, Wind } from '@phosphor-icons/react';
+
 import weatherSample from './data/staticData.json';
 import SearchBar from './components/searchBar/SearchBar';
 import toast, { Toaster } from 'react-hot-toast';
@@ -44,6 +45,7 @@ function App() {
 			setLoading(true);
 			setError(null);
 			const response = await axios.get(apiUrl);
+			// console.log(response);
 			setWeather(response?.data);
 		} catch (err) {
 			console.error(err);
@@ -86,12 +88,35 @@ function App() {
 			"It's a hot day! Avoid direct sunlight for long periods and drink plenty of water.";
 	}
 
+	// Function to get the appropriate weather icon based on weather parameters
+	const getWeatherIcon = (values) => {
+		if (!values) {
+			return <Cloud size={20} weight="fill" />;
+		}
+
+		const { cloudCover, rainIntensity, snowIntensity, weatherCode } = values;
+
+		// Handle extreme weather first
+		if (weatherCode >= 2000 && weatherCode < 3000) return <CloudLightning size={20} weight="fill" />; // Thunderstorms
+		if (snowIntensity > 0) return <CloudSnow size={20} weight="fill" />;
+		if (rainIntensity > 0) return <CloudRain size={20} weight="fill" />;
+
+		// Handle general cloud conditions
+		if (cloudCover >= 80) return <Cloud size={20} weight="fill" />;
+		if (cloudCover >= 50) return <CloudSun size={20} weight="fill" />;
+		if (cloudCover < 50) return <Sun size={20} weight="fill" />;
+
+		// Fallback
+		return <Cloud size={20} weight="fill" />;
+	};
+
+
 	const uvLevels = [
 		{ level: 0, label: "Low", color: "bg-green-400" },
 		{ level: 3, label: "Moderate", color: "bg-yellow-400" },
 		{ level: 6, label: "High", color: "bg-orange-400" },
 		{ level: 8, label: "Very High", color: "bg-red-500" },
-		{ level: 11, label: "Extreme", color: "bg-purple-700" }
+		{ level: 11, label: "Extreme UV", color: "bg-purple-700" }
 	];
 
 	// Function to get the UV description based on the index
@@ -99,7 +124,8 @@ function App() {
 		return uvLevels.reduce((acc, curr) => (Number(uvIndex) >= curr.level ? curr : acc), uvLevels[0]);
 	};
 
-	const uvIndex = weather?.timelines?.hourly[0]?.values?.uvIndex || 0;
+	const uvIndex = weather?.timelines?.minutely[0]?.values?.uvIndex || 0;
+	const uvHealthConcern = weather?.timelines?.hourly[0]?.values?.uvHealthConcern || 0;
 	const windSpeed = weather?.timelines?.hourly[0]?.values?.windSpeed || 0;
 	const windGust = weather?.timelines?.hourly[0]?.values?.windGust || 0;
 	const windDirection = weather?.timelines?.hourly[0]?.values?.windDirection || 0;
@@ -129,7 +155,7 @@ function App() {
 					<div className="flex flex-col md:w-[50%]">
 						<SearchBar search={fetchWeather} className="mb-4" />
 
-						<div className="flex-1 p-4 rounded-xl bg-linear-to-b from-black/35 to-white/30">
+						<div className="flex-1 p-2 md:p-4 rounded-xl bg-gradient-to-b from-black/35 to-white/30">
 							<div className='text-gray-200 mb-14'>
 								<h2 className='text-center text-blue-300'>Weather in {weather?.location?.name}</h2>
 								<div className="mx-auto mb-3 mt-14 w-fit text-center relative text-6xl">
@@ -154,12 +180,25 @@ function App() {
 											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <DotOutline size={20} className='absolute top-0 right-0 translate-x-4' />
 										</div> */}
 										<div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.temperatureApparent} <span className='absolute top-1 -right-1 translate-x-3 flex border-amber-100'>
-												<DotOutline size={20} className='absolute -top-1 -left-4' /> <small style={{ fontSize: '50%' }}>C</small>
+											{weather?.timelines?.minutely[0]?.values?.temperatureApparent}
+											<span className='absolute top-1 -right-1 translate-x-3 flex border-amber-100'>
+												<DotOutline size={20} className='absolute -top-1 -left-4' />
+												<small style={{ fontSize: '50%' }}>C</small>
 											</span>
 										</div>
 										<div className='text-xs'>
-											Humidity is making it feel like
+											{(() => {
+												const temp = weather?.timelines?.minutely[0]?.values?.temperature;
+												const tempApparent = weather?.timelines?.minutely[0]?.values?.temperatureApparent;
+
+												if (temp && tempApparent) {
+													const diff = Math.abs(temp - tempApparent);
+													if (diff <= 0.5) return "Similar to the actual temperature";
+													if (tempApparent > temp) return "Humidity is making it feel warmer";
+													if (tempApparent < temp) return "Wind is making it feel cooler";
+												}
+												return "";
+											})()}
 										</div>
 									</div>
 								</div>
@@ -184,7 +223,7 @@ function App() {
 											<Eye className='shrink-0' /> <span className="text-xs">Visibility</span>
 										</div>
 										<div className="mb-6 w-fit text-center relative text-xl">
-											{weather?.timelines?.minutely[0]?.values?.visibility} mi
+											{weather?.timelines?.minutely[0]?.values?.visibility} km
 										</div>
 									</div>
 								</div>
@@ -199,6 +238,44 @@ function App() {
 										</div>
 										<div className='text-xs'>
 											The dew point is <span className="relative me-1">{weather?.timelines?.minutely[0]?.values?.dewPoint} <DotOutline size={10} className='absolute top-0 right-0 translate-x-1' /></span> right now
+										</div>
+									</div>
+								</div>
+								{/*  */}
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 ps-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
+											<Cloud className='shrink-0' /> <span className="text-xs">Cloud cover</span>
+										</div>
+										<div className="mb-6 w-fit text-center relative">
+											{weather?.timelines?.daily[0]?.values?.cloudCoverAvg}%
+										</div>
+										<div className='text-xs'>
+											{(() => {
+												const cloudCover = weather?.timelines?.daily[0]?.values?.cloudCoverAvg;
+												if (cloudCover !== undefined) {
+													if (cloudCover <= 10) return "Clear skies";
+													if (cloudCover <= 30) return "Mostly clear";
+													if (cloudCover <= 50) return "Partly cloudy";
+													if (cloudCover <= 69) return "Mostly cloudy";
+													return "Overcast";
+												}
+												return "";
+											})()}
+										</div>
+									</div>
+								</div>
+								{/*  */}
+								<div className="w-[50%] shrink-0 p-2 sm:p-2 pe-0">
+									<div className='h-full p-3 rounded-xl bg-black/40 backdrop-blur-md'>
+										<div className="flex items-center gap-2 mb-1 uppercase opacity-50 overflow-hidden">
+											<SunHorizon className='shrink-0' /> <span className="text-xs">Sunset</span>
+										</div>
+										<div className="mb-6 w-fit text-center relative">
+											{new Date(weather?.timelines?.daily[0]?.values?.sunsetTime).toLocaleTimeString()}
+										</div>
+										<div className='text-xs'>
+											Sunrise <span className="relative me-1">{new Date(weather?.timelines?.daily[0]?.values?.sunriseTime).toLocaleTimeString()} </span> today
 										</div>
 									</div>
 								</div>
@@ -220,7 +297,7 @@ function App() {
 									<div className="w-fit text-center flex text-lg translate-x-1">
 										<span className='drop-shadow-lg'>{weather?.timelines?.hourly[0]?.values?.temperatureApparent}</span> <DotOutline size={13} className='' />
 									</div>
-									<Cloud size={20} weight='fill' />
+									{getWeatherIcon(weather?.timelines?.hourly[0]?.values)}
 								</div>
 								{weather?.timelines?.hourly
 									.slice(1)
@@ -232,7 +309,7 @@ function App() {
 											<div className="w-fit text-center flex text-lg translate-x-1">
 												<span className='drop-shadow-lg'>{item.values?.temperatureApparent}</span> <DotOutline size={13} className='' />
 											</div>
-											<Cloud size={20} weight='fill' />
+											{getWeatherIcon(item?.values)}
 										</div>
 									))
 								}
@@ -253,7 +330,15 @@ function App() {
 									<div className="w-fit text-center flex text-lg translate-x-1">
 										<span className='drop-shadow-lg'>{weather?.timelines?.daily[0]?.values?.temperatureApparentAvg}</span> <DotOutline size={13} className='' />
 									</div>
-									<Cloud size={20} weight='fill' />
+									{getWeatherIcon(
+										{
+											temperature: weather?.timelines?.daily[0]?.values?.temperatureApparentAvg,
+											cloudCover: weather?.timelines?.daily[0]?.values?.cloudCoverAvg,
+											rainIntensity: weather?.timelines?.daily[0]?.values?.rainIntensityAvg,
+											snowIntensity: weather?.timelines?.daily[0]?.values?.snowIntensityAvrainIntensityAvg,
+											weatherCode: weather?.timelines?.daily[0]?.values?.weatherCodeAvrainIntensityAvg,
+										}
+									)}
 								</div>
 								{weather?.timelines?.daily
 									.slice(1)
@@ -268,7 +353,16 @@ function App() {
 											<div className="w-fit text-center flex text-lg translate-x-1">
 												<span className='drop-shadow-lg'>{item.values?.temperatureApparentAvg}</span> <DotOutline size={13} className='' />
 											</div>
-											<Cloud size={20} weight='fill' />
+											{getWeatherIcon(
+												{
+													temperature: item.values?.temperatureApparentAvg,
+													cloudCover: item.values?.cloudCoverAvg,
+													rainIntensity: item.values?.rainIntensityAvg,
+													snowIntensity: item.values?.snowIntensityAvrainIntensityAvg,
+													weatherCode: item.values?.weatherCodeAvrainIntensityAvg,
+												}
+											)}
+											{/* {getWeatherIcon(item?.values)} */}
 										</div>
 									))
 								}
@@ -288,16 +382,23 @@ function App() {
 										<img src="/images/uv_spectrum.png" className='w-full h-1 object-center rounded-full' alt="" />
 										<span
 											className="absolute left-0 top-1/2 w-3 h-3 -translate-x-1/2 -translate-y-1/2 border-[1.5px] border-gray-800 bg-gray-200 rounded-full cursor-pointer"
-											style={{ left: `${(uvIndex / 11) * 100}%` }}
+											style={{ left: `${(uvIndex / 11) * 100 >= 100 ? '100' : (uvIndex / 11) * 100}%` }}
 										></span>
 									</div>
 								</div>
 								<div className='text-xs'>
-									{uvIndex <= 2 && "Low danger from the sun's UV rays for the average person."}
-									{uvIndex > 2 && uvIndex <= 5 && "Moderate risk of harm from unprotected sun exposure."}
-									{uvIndex > 5 && uvIndex <= 7 && "High risk of harm from unprotected sun exposure. Protection against skin and eye damage is needed."}
-									{uvIndex > 7 && uvIndex <= 10 && "Very high risk of harm from unprotected sun exposure. Take extra precautions because unprotected skin and eyes will be damaged and can burn quickly."}
-									{uvIndex > 10 && "Extreme risk of harm from unprotected sun exposure. Take all precautions because unprotected skin and eyes can burn in minutes."}
+									<p className='mb-2'>
+										{uvHealthConcern <= 1 && "Low or no risk. Enjoy the outside responsibly."}
+										{uvHealthConcern === 2 && "Moderate risk. Stay in shade near midday."}
+										{uvHealthConcern === 3 && "High risk. Limit exposure from 10 a.m. to 4 p.m."}
+										{uvHealthConcern === 4 && "Very high risk. Avoid the sun during peak hours."}
+										{uvHealthConcern === 5 && "Extreme risk. Protect skin and eyes completely."}
+									</p>
+									{uvHealthConcern >= 4 && (
+										<p style={{ fontSize: '80%' }}>
+											Always check local advisories for detailed precautions.
+										</p>
+									)}
 								</div>
 							</div>
 							{/* Wind */}
@@ -376,7 +477,7 @@ function App() {
 						</div>
 					)}
 					{!loading && !error && weather && (
-						<div>
+						<div className='bg-slate-300'>
 							{/* <h3>Weather in {weather?.location?.name}</h3>
 							<code style={{ whiteSpace: 'pre-wrap' }}>
 								{JSON.stringify((weather), null, 2)}
