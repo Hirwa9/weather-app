@@ -150,7 +150,7 @@ function App() {
 				</div>
 
 				{/* Design */}
-				<div className='sm:w-xl md:w-3xl lg:w-6xl xl:w-9xl max-w-full mx-auto flex flex-col md:flex-row gap-4 pt-10 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
+				<div className='md:w-sm lg:max-w-4xl xl:max-w-6xl max-w-full mx-auto flex flex-col md:flex-row gap-4 pt-10 p-3 md:p-4 lg:p-6 image-bg sm:rounded-3xl'>
 					{/* First */}
 					<div className="flex flex-col md:w-[50%]">
 						<SearchBar search={fetchWeather} className="mb-4" />
