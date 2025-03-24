@@ -155,28 +155,36 @@ function App() {
 	// console.log(weather);
 
 	// Weather related information
-	const temperature = weather?.timelines?.minutely[0]?.values?.temperature;
+	const temperature = weather?.timelines?.hourly[0]?.values?.temperature;
 
 	let weatherSubtitle = "Mild and Comfortable";
 	let weatherSummary =
 		"Today, expect comfortable temperatures throughout the day. A perfect time to enjoy outdoor activities.";
 
-	if (temperature <= 5) {
+	if (temperature <= 0) {
 		weatherSubtitle = "Freezing Cold";
 		weatherSummary =
-			"Bundle up! It's a freezing day outside. Wear heavy layers, gloves, and a warm hat to stay cozy.";
-	} else if (temperature > 5 && temperature <= 15) {
+			"Dangerously cold. Wear heavy layers, gloves, a warm hat, and limit time outdoors.";
+	} else if (temperature > 0 && temperature <= 10) {
 		weatherSubtitle = "Chilly and Crisp";
 		weatherSummary =
-			"A cool and refreshing day! You might want a light jacket or a sweater for warmth.";
-	} else if (temperature > 25 && temperature <= 32) {
+			"Cold and brisk. A coat and scarf are recommended to stay warm.";
+	} else if (temperature > 10 && temperature <= 20) {
+		weatherSubtitle = "Cool and Fresh";
+		weatherSummary =
+			"Comfortable but cool. A light jacket or sweater should do the trick.";
+	} else if (temperature > 20 && temperature <= 30) {
 		weatherSubtitle = "Warm and Pleasant";
 		weatherSummary =
-			"A warm day ahead! Stay hydrated and wear light, breathable clothing.";
-	} else if (temperature > 32) {
+			"Ideal weather! Perfect for outdoor activities with light, breathable clothing.";
+	} else if (temperature > 30 && temperature <= 35) {
 		weatherSubtitle = "Hot and Sunny";
 		weatherSummary =
-			"It's a hot day! Avoid direct sunlight for long periods and drink plenty of water.";
+			"Warm and sunny. Stay hydrated and wear sunscreen if outdoors.";
+	} else if (temperature > 35) {
+		weatherSubtitle = "Scorching Heat";
+		weatherSummary =
+			"Extreme heat. Avoid prolonged sun exposure, drink plenty of water, and find shade.";
 	}
 
 	// Function to get the appropriate weather icon based on weather parameters
